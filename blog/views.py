@@ -1,10 +1,13 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.http import HttpResponse
+from django.utils import timezone
 
 
 # Create your views here.
 def index(request):
-    return render(request, "blog/index.html")
+    context = {"articles": []}
+
+    return render(request, "blog/index.html", context)
 
 
 def hello(request):
@@ -30,3 +33,21 @@ def hello(request):
         "fortune": fortuneMesseage,
     }
     return render(request, "blog/hello.html", data)
+
+
+def redirect_test(request):
+    return redirect(hello)
+
+
+def detail(request, article_id):
+    context = {"article_id": article_id}
+    return render(request, "blog/tbd.html", context)
+
+
+def update(request, article_id):
+    context = {"artcle_id": article_id}
+    return render(request, "blog/tbd,html", context)
+
+
+def delete(request, article_id):
+    return redirect(index)
