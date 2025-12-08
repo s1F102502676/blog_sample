@@ -1,17 +1,23 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from django.utils import timezone
+import random
+from blog.models import Article
+from django.http import Http404
 
 
 # Create your views here.
 def index(request):
-    context = {"articles": []}
+    if request.method == "POST":
+        article = Article(title=request.POST["title"], body=request.POST["text"])
+        article.save()
+        return redirect(detail, article.id)
+    context = {"articles": Article.objects.all()}
 
     return render(request, "blog/index.html", context)
 
 
 def hello(request):
-    import random
 
     fortune = random.randint(1, 3)
     isGreatFortune = False
@@ -40,14 +46,27 @@ def redirect_test(request):
 
 
 def detail(request, article_id):
-    context = {"article_id": article_id}
-    return render(request, "blog/tbd.html", context)
+    try:
+        article = Article.objects.get(id=article_id)
+    except Article.DoesNotExist:
+        raise Http404("Article does not exist")
+    context = {"article": article}
+    return render(request, "blog/detail.html", context)
 
 
 def update(request, article_id):
-    context = {"artcle_id": article_id}
-    return render(request, "blog/tbd,html", context)
+    try:
+        article = Article.objects.get(pk=article_id)
+    except Article.DoesNotExist:
+        raise Http404("Article does not exist")
+    context = {"article": article}
+    return render(request, "blog/edit.html", context)
 
 
 def delete(request, article_id):
+    try:
+        article = Article.objects.get(pk=article_id)
+    except Article.DoesNotExist:
+        raise Http404("Article does not exist")
+    article.delete()
     return redirect(index)
