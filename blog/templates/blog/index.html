@@ -4,13 +4,21 @@
   <head>
     <meta charset="UTF-8" />
     <link href="{% static 'blog/css/default.css' %}" rel="stylesheet" />
+    <script
+      type="text/javascript"
+      src="{% static 'blog/js/index.js' %}"
+    ></script>
+    <title>Django Sample</title>
   </head>
+
   <body>
     <div id="header">
       <img src="{% static 'blog/img/iniad.png' %}" alt="Logo" />
     </div>
+
     <h1>Django Sample Application</h1>
     <p>You can submit articles from the following form.</p>
+
     <form action="{% url 'index' %}" method="post">
       {% csrf_token %}
       <div>
@@ -22,29 +30,37 @@
           placeholder="Input title"
         />
       </div>
+
       <div>
         <label for="textInput">Text</label><br />
         <textarea id="textInput" name="text" rows="3"></textarea>
       </div>
+
       <div>
         <button type="submit">Submit</button>
       </div>
     </form>
+
     <br />
+
     <div>
-      <a href="{% url 'index' %}?sort=data">Sort by Data</a> | 
+      <a href="{% url 'index' %}?sort=data">Sort by Data</a> |
       <a href="{% url 'index' %}?sort=like">Sort by Like</a>
     </div>
 
-
     {% if articles %} {% for article in articles %}
-    <div class='text'>
+    <div class="text">
       <h2>
-      <a href="{% url 'detail' article.id %}">{{ article.title }}</a>
-      <small>[{{ article.posted_at }}]</small>
+        <a href="{% url 'detail' article.id %}">{{ article.title }}</a>
+        <small>[{{ article.posted_at }}]</small>
+      </h2>
+
       <div>
-        <a href="{% url 'detail' article.id %}">Like: {{ article.like }}</a>
+        <a onclick="like({{ article.id }});">
+          Like: <span id="like{{ article.id }}">{{ article.like }}</span>
+        </a>
       </div>
+
       <div>{{ article.body | linebreaksbr }}</div>
     </div>
     {% endfor %} {% else %}
