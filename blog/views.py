@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from django.utils import timezone
 import random
-from blog.models import Article
+from blog.models import Article, Comment
 from django.http import Http404
 
 
@@ -50,7 +50,12 @@ def detail(request, article_id):
         article = Article.objects.get(id=article_id)
     except Article.DoesNotExist:
         raise Http404("Article does not exist")
-    context = {"article": article}
+
+    if request.method == "POST":
+        comment = Comment(article=article, ext=request.POST["text"])
+        comment.save()
+
+    context = {"article": article, "comments": article.comments.order_by("-posted_at")}
     return render(request, "blog/detail.html", context)
 
 
