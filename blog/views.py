@@ -8,7 +8,13 @@ from django.http import Http404, JsonResponse
 
 # Create your views here.
 def index(request):
-
+    if request.method == "POST":
+        title = request.POST["title"]
+        body = request.POST["text"]
+        article = Article.objects.create(title=title, body=body)
+        return redirect("detail", article_id=article.id)
+    
+    # 既存の並び替え処理はそのまま
     if "sort" in request.GET:
         articles = Article.objects.order_by("-posted_at")
         if request.GET["sort"] == "like":
@@ -19,9 +25,7 @@ def index(request):
         articles = Article.objects.order_by("-posted_at")
 
     context = {"articles": articles}
-
     return render(request, "blog/index.html", context)
-
 
 def hello(request):
 
@@ -58,7 +62,7 @@ def detail(request, article_id):
         raise Http404("Article does not exist")
 
     if request.method == "POST":
-        comment = Comment(article=article, ext=request.POST["text"])
+        comment = Comment(article=article, text=request.POST["text"])
         comment.save()
 
     context = {"article": article, "comments": article.comments.order_by("-posted_at")}
@@ -85,7 +89,7 @@ def delete(request, article_id):
 
 def like(request, article_id):
     try:
-        article = Article.objects.get(pl=article_id)
+        article = Article.objects.get(pk=article_id)
         article.like += 1
         article.save()
     except Article.DoesNotExist:
