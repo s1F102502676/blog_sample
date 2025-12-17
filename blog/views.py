@@ -87,6 +87,7 @@ def delete(request, article_id):
     return redirect(index)
 
 
+
 def like(request, article_id):
     try:
         article = Article.objects.get(pk=article_id)
